@@ -1,38 +1,76 @@
+let numeroSecreto = 0;
+let intentos = 0;
+let listaNumerosSorteados = [];
+let numeroMaximo = 10;
 
-let numeroUsuario=0;
-let Contador=0;
-let numeroMaximoUsuario =100;//CAMBIAR RANGO A ADIVINAR
-let numeroIncognito = Math.floor(Math.random()*numeroMaximoUsuario)+1;
-let CantidadIntentos=3;
 
-console.log(numeroIncognito);
-while(numeroUsuario!= numeroIncognito) {
-  alert(`TIENES ${CantidadIntentos-Contador} ${CantidadIntentos==1?'INTENTO':'INTENTOS'}.....JUGUEMOS!`);
-    numeroUsuario = parseInt(prompt(`Ingresa un Numero entre 1 y ${numeroMaximoUsuario} para ver si lo adivinas`)); //PEDIMOS EL NUMERO
-    console.log(`Numero Ingresado ${numeroUsuario}`);
-    console.log(typeof(numeroUsuario));
-    console.log('Resultado de la comparación:', numeroUsuario == numeroIncognito);/*EJERCICIO PLANTEADO CURSO 1, FASE 2, CAP 8
-    arroja el resultado de la comparacion TRUE o FALSE segun sea este.
-    */ 
-    if (numeroUsuario == numeroIncognito) {//CONDICION
-      Contador++;
-        alert(`ADIVINASTE! EL NUMERO VERDADERAMENTE ES: ${numeroIncognito} \nLO HICISTE EN ${Contador} ${Contador==1 ? 'INTENTO':'INTENTOS'} ${Contador==1 ? '\n\n...................A CASO ERES MAGO?!!.............':'\nGRACIAS POR JUGAR'} `);
-        } 
-    else {
-      /*EJERCICIO PLANTEADO CURSO 1, FASE 2, CAP 9 PRACTICAMENTE LA OPERACION ANTERIOS PERO UTILIZANDO Template trings como lo sugiere el punto 4*/
-      if (numeroUsuario > numeroIncognito){
-        Contador++;
-            alert(`LO SIENTO MUCHO! EL NUMERO ES MENOR \nLLEVAS ${Contador} ${Contador==1 ? 'INTENTO':'INTENTOS'}`);
-                       }   
-          else{
-            Contador++;
-            alert(`LO SIENTO MUCHO! EL NUMERO ES MAYOR \nLLEVAS ${Contador} ${Contador==1 ? 'INTENTO':'INTENTOS'}`);
-              }          
-      if (Contador==CantidadIntentos){
-            alert(`LO SIENTO MUCHO AGOTASTE EL NUMERO DE OPORTUNIDADES`);
-            break;
-           }    
+
+function asignarTextoElemento(elemento, texto) {
+    let elementoHTML = document.querySelector(elemento);
+    elementoHTML.innerHTML = texto;
+    return;
+}
+
+function verificarIntento() {
+    let numeroDeUsuario = parseInt(document.getElementById('valorUsuario').value);
+    
+    if (numeroDeUsuario === numeroSecreto) {
+        asignarTextoElemento('p',`Acertaste el número en ${intentos} ${(intentos === 1) ? 'vez' : 'veces'}`);
+        document.getElementById('reiniciar').removeAttribute('disabled');
+    } else {
+        //El usuario no acertó.
+        if (numeroDeUsuario > numeroSecreto) {
+            asignarTextoElemento('p','El número secreto es menor');
+        } else {
+            asignarTextoElemento('p','El número secreto es mayor');
+        }
+        intentos++;
+        limpiarCaja();
+    }
+    return;
+}
+
+function limpiarCaja() {
+    document.querySelector('#valorUsuario').value = '';
+}
+
+function generarNumeroSecreto() {
+    let numeroGenerado =  Math.floor(Math.random()*numeroMaximo)+1;
+
+    console.log(numeroGenerado);
+    console.log(listaNumerosSorteados);
+    //Si ya sorteamos todos los números
+    if (listaNumerosSorteados.length == numeroMaximo) {
+        asignarTextoElemento('p','Ya se sortearon todos los números posibles');
+    } else {
+        //Si el numero generado está incluido en la lista 
+        if (listaNumerosSorteados.includes(numeroGenerado)) {
+            return generarNumeroSecreto();
+        } else {
+            listaNumerosSorteados.push(numeroGenerado);
+            return numeroGenerado;
         }
     }
-    Contador=0;numeroIncognito=0;
-  
+}
+
+function condicionesIniciales() {
+    asignarTextoElemento('h1','Juego del número secreto!');
+    asignarTextoElemento('p',`Indica un número del 1 al ${numeroMaximo}`);
+    numeroSecreto = generarNumeroSecreto();
+    intentos = 1;
+    console.log(numeroSecreto);
+}
+
+function reiniciarJuego() {
+    //limpiar caja
+    limpiarCaja();
+    //Indicar mensaje de intervalo de números 
+    //Generar el número aleatorio
+    //Inicializar el número intentos
+    condicionesIniciales();
+    //Deshabilitar el botón de nuevo juego
+    document.querySelector('#reiniciar').setAttribute('disabled','true');
+    
+}
+
+condicionesIniciales();
